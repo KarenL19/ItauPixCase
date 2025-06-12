@@ -44,6 +44,8 @@ public class Pix {
         this.accountHolderSurname = accountHolderSurname;
     }
 
+    public Pix() {
+    }
 
     public String getKeyStatus() {
         return keyStatus;

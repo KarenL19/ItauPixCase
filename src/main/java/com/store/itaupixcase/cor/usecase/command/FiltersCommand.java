@@ -24,6 +24,7 @@ public class FiltersCommand {
         this.inactiveTime = inactiveTime;
         this.accountType = accountType;
     }
+    public  FiltersCommand() {}
 
     public String getAccountType() {
         return accountType;

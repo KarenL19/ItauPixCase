@@ -1,4 +1,4 @@
-package com.store.itaupixcase.infra.adapters.in.dto.create;
+package com.store.itaupixcase.infra.adapters.in.dto.insert;
 
 import lombok.*;
 
