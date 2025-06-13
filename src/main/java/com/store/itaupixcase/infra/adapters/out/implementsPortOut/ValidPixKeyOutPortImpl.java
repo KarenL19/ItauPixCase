@@ -16,13 +16,13 @@ public class ValidPixKeyOutPortImpl implements ValidatePixKeyOutPort {
     }
 
     @Override
-    public Long countPixKey(Integer agencyNumber, Integer accountNumber) {
-        return pixRepository.countByKeyTypeAndKeyValue(agencyNumber,accountNumber);
+    public Long countPixKey(Integer agencyNumber, Integer accountNumber, String keyStatus) {
+        return pixRepository.countByKeyTypeAndKeyValue(agencyNumber,accountNumber, keyStatus);
     }
 
     @Override
-    public boolean existsPixKey(String pixKey) {
-        Optional<PixEntity> pixEntity = pixRepository.findFirstByKeyValue(pixKey);
+    public boolean existsPixKey(String pixKey, String activeKey) {
+        Optional<PixEntity> pixEntity = pixRepository.findFirstByKeyValueAndKeyStatus(pixKey, activeKey);
         if (pixEntity.isPresent()) {
             return true;
         }

@@ -1,13 +1,13 @@
 package cor.usecase.command;
 
-import com.store.itaupixcase.cor.usecase.command.RegisterKeyPixCommand;
+import com.store.itaupixcase.cor.usecase.command.RegisterPixKeyCommand;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class RegisterKeyPixCommandTest {
+class RegisterPixKeyCommandTest {
 
     @Test
     void deveCriarComConstrutorCompletoEGetters() {
@@ -20,7 +20,7 @@ class RegisterKeyPixCommandTest {
         String accountHolderSurname = "Silva";
         String clientType = "PF";
 
-        RegisterKeyPixCommand command = new RegisterKeyPixCommand(
+        RegisterPixKeyCommand command = new RegisterPixKeyCommand(
                 keyType, keyValue, accountType, accountNumber, agencyNumber, accountHolderName, accountHolderSurname, clientType
         );
 
@@ -44,7 +44,7 @@ class RegisterKeyPixCommandTest {
         String accountHolderName = "Maria";
         String accountHolderSurname = "Oliveira";
 
-        RegisterKeyPixCommand command = new RegisterKeyPixCommand(
+        RegisterPixKeyCommand command = new RegisterPixKeyCommand(
                 id, accountType, accountNumber, agencyNumber, accountHolderName, accountHolderSurname
         );
 
@@ -61,7 +61,7 @@ class RegisterKeyPixCommandTest {
 
     @Test
     void devePermitirSetId() {
-        RegisterKeyPixCommand command = new RegisterKeyPixCommand(
+        RegisterPixKeyCommand command = new RegisterPixKeyCommand(
                 "EMAIL", "usuario@dominio.com", "CORRENTE", 12345, 6789, "João", "Silva", "PF"
         );
         UUID novoId = UUID.randomUUID();

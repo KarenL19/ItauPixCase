@@ -3,7 +3,7 @@ package com.store.itaupixcase.app.impl;
 import com.store.itaupixcase.app.PixService;
 import com.store.itaupixcase.cor.ports.in.InsertKeyPixInPort;
 import com.store.itaupixcase.cor.usecase.command.FiltersCommand;
-import com.store.itaupixcase.cor.usecase.command.RegisterKeyPixCommand;
+import com.store.itaupixcase.cor.usecase.command.RegisterPixKeyCommand;
 import com.store.itaupixcase.infra.adapters.in.dto.consult.FiltersDto;
 import com.store.itaupixcase.infra.adapters.in.dto.consult.PixRequestConsultDTO;
 import com.store.itaupixcase.infra.adapters.in.dto.insert.PixRequestDTO;
@@ -12,7 +12,6 @@ import com.store.itaupixcase.infra.adapters.in.dto.update.PixRequestUpdateDTO;
 import com.store.itaupixcase.infra.adapters.in.dto.update.PixResponseUpdateDTO;
 import com.store.itaupixcase.infra.adapters.out.entity.PixEntity;
 import com.store.itaupixcase.infra.adapters.out.mapper.PixMapper;
-import com.store.itaupixcase.infra.adapters.out.repository.PixConsultRepository;
 import com.store.itaupixcase.infra.adapters.out.repository.PixRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Component;
@@ -26,18 +25,17 @@ public class PixServiceImpl implements PixService {
     private final PixMapper pixMapper;
     private  final PixRepository pixRepository;
     private final EntityManager entityManager;
-    private final PixConsultRepository pixConsultRepository;
 
-    public PixServiceImpl(InsertKeyPixInPort insertKeyPixInPort, PixMapper pixMapper, PixRepository pixRepository, EntityManager entityManager, PixConsultRepository pixConsultRepository) {
+
+    public PixServiceImpl(InsertKeyPixInPort insertKeyPixInPort, PixMapper pixMapper, PixRepository pixRepository, EntityManager entityManager) {
         this.insertKeyPixInPort = insertKeyPixInPort;
         this.pixMapper = pixMapper;
         this.pixRepository = pixRepository;
         this.entityManager = entityManager;
-        this.pixConsultRepository = pixConsultRepository;
     }
 
     public PixResponseDTO registerPixKey(PixRequestDTO pixRequestDTO) {
-        RegisterKeyPixCommand command = new RegisterKeyPixCommand(
+        RegisterPixKeyCommand command = new RegisterPixKeyCommand(
                 pixRequestDTO.getKeyType(),
                 pixRequestDTO.getKeyValue(),
                 pixRequestDTO.getAccountType(),
@@ -59,7 +57,7 @@ public class PixServiceImpl implements PixService {
 
     @Override
     public PixResponseUpdateDTO updatePixKey(PixRequestUpdateDTO pixRequestDTO) {
-        RegisterKeyPixCommand command = new RegisterKeyPixCommand(
+        RegisterPixKeyCommand command = new RegisterPixKeyCommand(
                 pixRequestDTO.getId(),
                 pixRequestDTO.getAccountType(),
                 pixRequestDTO.getAccountNumber(),
@@ -96,12 +94,8 @@ public class PixServiceImpl implements PixService {
                 filtersDto.getInactiveTime(),
                 filtersDto.getAccountType()
         );
-         command = insertKeyPixInPort.consultKeyPix(command);
-        try {
-          return pixMapper.toResponseConsultDTOList(pixConsultRepository.findByFilters(command));
-        } catch (Exception e) {
-            throw new RuntimeException("Erro ao consultar: " + e.getMessage(), e);
-        }
+        return pixMapper.toPixRequestConsultDTOList(insertKeyPixInPort.consultKeyPix(command));
+
 
     }
 

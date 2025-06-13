@@ -16,6 +16,7 @@ class AccountValidatorTest {
 
     private ValidateIdPixOutPort validateIdPixOutPort;
     private AccountValidator validator;
+    private static String keyStatus = "A";
 
     @BeforeEach
     void setUp() {
@@ -137,16 +138,16 @@ class AccountValidatorTest {
     @Test
     void validateIdActiveShouldThrowWhenNotExists() {
         UUID id = UUID.randomUUID();
-        when(validateIdPixOutPort.validateIdActive(id)).thenReturn(false);
+        when(validateIdPixOutPort.validateIdActive(id,keyStatus)).thenReturn(false);
         NoSuchElementException ex = assertThrows(NoSuchElementException.class,
-                () -> validator.validateIdActive(id));
+                () -> validator.validateIdActive(id, keyStatus));
         assertTrue(ex.getMessage().contains("ID ativo não encontrado"));
     }
 
     @Test
     void validateIdActiveShouldPassWhenExists() {
         UUID id = UUID.randomUUID();
-        when(validateIdPixOutPort.validateIdActive(id)).thenReturn(true);
-        assertDoesNotThrow(() -> validator.validateIdActive(id));
+        when(validateIdPixOutPort.validateIdActive(id,keyStatus)).thenReturn(true);
+        assertDoesNotThrow(() -> validator.validateIdActive(id, keyStatus));
     }
 }

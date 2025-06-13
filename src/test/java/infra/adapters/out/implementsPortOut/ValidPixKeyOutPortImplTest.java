@@ -23,39 +23,43 @@ class ValidPixKeyOutPortImplTest {
     }
 
     @Test
-    void deveRetornarQuantidadeDeChavesPix() {
-        Integer agencyNumber = 1234;
-        Integer accountNumber = 56789;
-        Long expectedCount = 2L;
+    void countPixKey_deveRetornarQuantidadeCorreta() {
+        Integer agencyNumber = 123;
+        Integer accountNumber = 456;
+        String keyStatus = "A";
+        Long expected = 5L;
 
-        when(pixRepository.countByKeyTypeAndKeyValue(agencyNumber, accountNumber)).thenReturn(expectedCount);
+        when(pixRepository.countByKeyTypeAndKeyValue(agencyNumber, accountNumber, keyStatus)).thenReturn(expected);
 
-        Long result = validPixKeyOutPort.countPixKey(agencyNumber, accountNumber);
+        Long result = validPixKeyOutPort.countPixKey(agencyNumber, accountNumber, keyStatus);
 
-        assertEquals(expectedCount, result);
-        verify(pixRepository).countByKeyTypeAndKeyValue(agencyNumber, accountNumber);
+        assertEquals(expected, result);
+        verify(pixRepository).countByKeyTypeAndKeyValue(agencyNumber, accountNumber, keyStatus);
     }
 
     @Test
-    void deveRetornarTrueQuandoPixKeyExiste() {
+    void existsPixKey_deveRetornarTrueQuandoExiste() {
         String pixKey = "chave@pix.com";
-        PixEntity entity = new PixEntity();
-        when(pixRepository.findFirstByKeyValue(pixKey)).thenReturn(Optional.of(entity));
+        String keyStatus = "A";
+        when(pixRepository.findFirstByKeyValueAndKeyStatus(pixKey, keyStatus))
+                .thenReturn(Optional.of(new PixEntity()));
 
-        boolean exists = validPixKeyOutPort.existsPixKey(pixKey);
+        boolean exists = validPixKeyOutPort.existsPixKey(pixKey, keyStatus);
 
         assertTrue(exists);
-        verify(pixRepository).findFirstByKeyValue(pixKey);
+        verify(pixRepository).findFirstByKeyValueAndKeyStatus(pixKey, keyStatus);
     }
 
     @Test
-    void deveRetornarFalseQuandoPixKeyNaoExiste() {
+    void existsPixKey_deveRetornarFalseQuandoNaoExiste() {
         String pixKey = "naoexiste@pix.com";
-        when(pixRepository.findFirstByKeyValue(pixKey)).thenReturn(Optional.empty());
+        String keyStatus = "A";
+        when(pixRepository.findFirstByKeyValueAndKeyStatus(pixKey, keyStatus))
+                .thenReturn(Optional.empty());
 
-        boolean exists = validPixKeyOutPort.existsPixKey(pixKey);
+        boolean exists = validPixKeyOutPort.existsPixKey(pixKey, keyStatus);
 
         assertFalse(exists);
-        verify(pixRepository).findFirstByKeyValue(pixKey);
+        verify(pixRepository).findFirstByKeyValueAndKeyStatus(pixKey, keyStatus);
     }
 }

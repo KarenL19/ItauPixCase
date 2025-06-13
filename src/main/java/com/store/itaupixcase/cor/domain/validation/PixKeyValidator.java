@@ -1,6 +1,7 @@
 package com.store.itaupixcase.cor.domain.validation;
 
 import com.store.itaupixcase.cor.domain.enuns.ClientType;
+import com.store.itaupixcase.cor.domain.enuns.GenericsRules;
 import com.store.itaupixcase.cor.domain.enuns.KeyType;
 import com.store.itaupixcase.cor.ports.out.ValidatePixKeyOutPort;
 import org.springframework.stereotype.Component;
@@ -27,11 +28,11 @@ public class PixKeyValidator {
         }
     }
 
-    public void validateKeysByCLient(Integer agencyNumber, Integer accountNumber, String clientType) {
+    public void validateKeysByCLient(Integer agencyNumber, Integer accountNumber, String clientType, String keyStatus) {
         if (agencyNumber == null || agencyNumber <= 0 || accountNumber == null || accountNumber <= 0) {
             throw new IllegalArgumentException("Agencia e Conta não podem ser nulas");
         }
-        long count = validatePixKeyOutPort.countPixKey(agencyNumber, accountNumber);
+        long count = validatePixKeyOutPort.countPixKey(agencyNumber, accountNumber, keyStatus);
         switch (clientType) {
             case "PF":
                 if (count >= 5) {
@@ -46,11 +47,11 @@ public class PixKeyValidator {
        }
     }
 
-    public void existsPixKey(String pixKey) {
+    public void existsPixKey(String pixKey, String activeKey) {
         if (pixKey == null || pixKey.isEmpty()) {
             throw new IllegalArgumentException("Chave Pix não pode ser nula ou vazia");
         }
-        if (validatePixKeyOutPort.existsPixKey(pixKey)) {
+        if (validatePixKeyOutPort.existsPixKey(pixKey, activeKey)) {
             throw new IllegalArgumentException("Chave Pix já existe: " + pixKey);
         }
     }

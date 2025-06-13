@@ -15,14 +15,15 @@ import java.util.UUID;
 @Repository
 public interface PixRepository extends JpaRepository<PixEntity, UUID> {
 
-    @Query("SELECT COUNT(p) FROM PixEntity p WHERE p.agencyNumber = :agencyNumber AND p.accountNumber = :accountNumber AND p.keyStatus = 'A'")
+    @Query("SELECT COUNT(p) FROM PixEntity p WHERE p.agencyNumber = :agencyNumber AND p.accountNumber = :accountNumber AND p.keyStatus = :keyStatus")
     long countByKeyTypeAndKeyValue(@Param("agencyNumber") Integer agencyNumber,
-                                   @Param("accountNumber") Integer accountNumber);
+                                   @Param("accountNumber") Integer accountNumber,
+                                   @Param("keyStatus") String keyStatus);
 
-    Optional<PixEntity> findFirstByKeyValue(String keyValue);
+    Optional<PixEntity> findFirstByKeyValueAndKeyStatus(String keyValue,String keyStatus);
 
-    @Query("SELECT p FROM PixEntity p WHERE p.id = :id AND p.keyStatus = 'A'")
-    Optional<PixEntity> findByIdAndKeyStatusActive(@Param("id") UUID id);
+    @Query("SELECT p FROM PixEntity p WHERE p.id = :id AND p.keyStatus = :keyStatus")
+    Optional<PixEntity> findByIdAndKeyStatusActive(@Param("id") UUID id,@Param("keyStatus") String keyStatus);
 
     @Modifying
     @Transactional

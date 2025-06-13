@@ -14,6 +14,7 @@ class PixKeyValidatorTest {
 
     private ValidatePixKeyOutPort validatePixKeyOutPort;
     private PixKeyValidator validator;
+    private static String keyStatus = "A";
 
     @BeforeEach
     void setUp() {
@@ -44,55 +45,55 @@ class PixKeyValidatorTest {
     // validateKeysByCLient
     @Test
     void validateKeysByCLientDeveLancarExcecaoParaAgenciaOuContaNulaOuZero() {
-        assertThrows(IllegalArgumentException.class, () -> validator.validateKeysByCLient(null, 1, "PF"));
-        assertThrows(IllegalArgumentException.class, () -> validator.validateKeysByCLient(1, null, "PF"));
-        assertThrows(IllegalArgumentException.class, () -> validator.validateKeysByCLient(0, 1, "PF"));
-        assertThrows(IllegalArgumentException.class, () -> validator.validateKeysByCLient(1, 0, "PF"));
+        assertThrows(IllegalArgumentException.class, () -> validator.validateKeysByCLient(null, 1, "PF", keyStatus));
+        assertThrows(IllegalArgumentException.class, () -> validator.validateKeysByCLient(1, null, "PF", keyStatus));
+        assertThrows(IllegalArgumentException.class, () -> validator.validateKeysByCLient(0, 1, "PF", keyStatus));
+        assertThrows(IllegalArgumentException.class, () -> validator.validateKeysByCLient(1, 0, "PF", keyStatus));
     }
 
     @Test
     void validateKeysByCLientDeveLancarExcecaoSeLimitePFExcedido() {
-        when(validatePixKeyOutPort.countPixKey(1, 2)).thenReturn(5L);
+        when(validatePixKeyOutPort.countPixKey(1, 2, keyStatus)).thenReturn(5L);
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> validator.validateKeysByCLient(1, 2, "PF"));
+                () -> validator.validateKeysByCLient(1, 2, "PF", keyStatus));
         assertTrue(ex.getMessage().contains("pessoa física"));
     }
 
     @Test
     void validateKeysByCLientDeveLancarExcecaoSeLimitePJExcedido() {
-        when(validatePixKeyOutPort.countPixKey(1, 2)).thenReturn(20L);
+        when(validatePixKeyOutPort.countPixKey(1, 2, keyStatus)).thenReturn(20L);
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> validator.validateKeysByCLient(1, 2, "PJ"));
+                () -> validator.validateKeysByCLient(1, 2, "PJ", keyStatus));
         assertTrue(ex.getMessage().contains("pessoa jurídica"));
     }
 
     @Test
     void validateKeysByCLientDevePermitirAbaixoDoLimite() {
-        when(validatePixKeyOutPort.countPixKey(1, 2)).thenReturn(4L);
-        assertDoesNotThrow(() -> validator.validateKeysByCLient(1, 2, "PF"));
-        when(validatePixKeyOutPort.countPixKey(1, 2)).thenReturn(19L);
-        assertDoesNotThrow(() -> validator.validateKeysByCLient(1, 2, "PJ"));
+        when(validatePixKeyOutPort.countPixKey(1, 2, keyStatus)).thenReturn(4L);
+        assertDoesNotThrow(() -> validator.validateKeysByCLient(1, 2, "PF", keyStatus));
+        when(validatePixKeyOutPort.countPixKey(1, 2, keyStatus)).thenReturn(19L);
+        assertDoesNotThrow(() -> validator.validateKeysByCLient(1, 2, "PJ",keyStatus));
     }
 
     // existsPixKey
     @Test
     void existsPixKeyDeveLancarExcecaoParaNullOuVazia() {
-        assertThrows(IllegalArgumentException.class, () -> validator.existsPixKey(null));
-        assertThrows(IllegalArgumentException.class, () -> validator.existsPixKey(""));
+        assertThrows(IllegalArgumentException.class, () -> validator.existsPixKey(null, ""));
+        assertThrows(IllegalArgumentException.class, () -> validator.existsPixKey("", ""));
     }
 
     @Test
     void existsPixKeyDeveLancarExcecaoSeChaveJaExiste() {
-        when(validatePixKeyOutPort.existsPixKey("chave")).thenReturn(true);
+        when(validatePixKeyOutPort.existsPixKey("chave", "")).thenReturn(true);
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                () -> validator.existsPixKey("chave"));
+                () -> validator.existsPixKey("chave",""));
         assertTrue(ex.getMessage().contains("Chave Pix já existe"));
     }
 
     @Test
     void existsPixKeyDevePermitirSeNaoExiste() {
-        when(validatePixKeyOutPort.existsPixKey("novaChave")).thenReturn(false);
-        assertDoesNotThrow(() -> validator.existsPixKey("novaChave"));
+        when(validatePixKeyOutPort.existsPixKey("novaChave", "")).thenReturn(false);
+        assertDoesNotThrow(() -> validator.existsPixKey("novaChave", ""));
     }
 
     @Test

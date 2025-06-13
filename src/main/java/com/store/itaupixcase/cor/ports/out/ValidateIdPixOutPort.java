@@ -4,5 +4,5 @@ import java.util.UUID;
 
 public interface ValidateIdPixOutPort {
     boolean validateIdPix(UUID idPix);
-    boolean validateIdActive(UUID idActive);
+    boolean validateIdActive(UUID idActive,String keyStatus);
 }

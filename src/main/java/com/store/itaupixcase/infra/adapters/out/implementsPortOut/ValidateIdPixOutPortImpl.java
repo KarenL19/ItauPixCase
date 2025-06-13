@@ -23,8 +23,8 @@ public class ValidateIdPixOutPortImpl implements ValidateIdPixOutPort {
     }
 
     @Override
-    public boolean validateIdActive(UUID idActive) {
-    if (pixRepository.findByIdAndKeyStatusActive(idActive).isPresent()) {
+    public boolean validateIdActive(UUID idActive,String keyStatus) {
+    if (pixRepository.findByIdAndKeyStatusActive(idActive,keyStatus).isPresent()) {
             return true;
         }
         return false;

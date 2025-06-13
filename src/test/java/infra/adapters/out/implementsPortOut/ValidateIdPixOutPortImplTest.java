@@ -45,9 +45,11 @@ class ValidateIdPixOutPortImplTest {
     @Test
     void deveRetornarFalseQuandoIdActiveNaoExiste() {
         UUID id = UUID.randomUUID();
-        when(pixRepository.findByIdAndKeyStatusActive(id)).thenReturn(Optional.empty());
+        String keyStatus = "A";
+        when(pixRepository.findByIdAndKeyStatusActive(id, keyStatus)).thenReturn(Optional.empty());
+        when(pixRepository.findByIdAndKeyStatusActive(id,keyStatus)).thenReturn(Optional.empty());
 
-        assertFalse(validateIdPixOutPort.validateIdActive(id));
-        verify(pixRepository).findByIdAndKeyStatusActive(id);
+        assertFalse(validateIdPixOutPort.validateIdActive(id, keyStatus));
+        verify(pixRepository).findByIdAndKeyStatusActive(id,keyStatus);
     }
 }

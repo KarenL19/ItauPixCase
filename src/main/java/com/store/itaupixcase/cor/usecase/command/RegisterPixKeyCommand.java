@@ -2,7 +2,7 @@ package com.store.itaupixcase.cor.usecase.command;
 
 import java.util.UUID;
 
-public class RegisterKeyPixCommand {
+public class RegisterPixKeyCommand {
     private UUID id;
     private String keyType;
     private String keyValue;
@@ -13,7 +13,7 @@ public class RegisterKeyPixCommand {
     private String accountHolderSurname;
     private String clientType;
 
-    public RegisterKeyPixCommand(String keyType, String keyValue, String accountType, Integer accountNumber, Integer agencyNumber, String accountHolderName, String accountHolderSurname, String clientType) {
+    public RegisterPixKeyCommand(String keyType, String keyValue, String accountType, Integer accountNumber, Integer agencyNumber, String accountHolderName, String accountHolderSurname, String clientType) {
         this.keyType = keyType;
         this.keyValue = keyValue;
         this.accountType = accountType;
@@ -24,7 +24,7 @@ public class RegisterKeyPixCommand {
         this.clientType = clientType;
     }
 
-    public RegisterKeyPixCommand(UUID id, String accountType, Integer accountNumber, Integer agencyNumber, String accountHolderName, String accountHolderSurname) {
+    public RegisterPixKeyCommand(UUID id, String accountType, Integer accountNumber, Integer agencyNumber, String accountHolderName, String accountHolderSurname) {
         this.id = id;
         this.accountType = accountType;
         this.accountNumber = accountNumber;

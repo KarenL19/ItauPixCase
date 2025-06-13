@@ -3,8 +3,9 @@ package app;
 import com.store.itaupixcase.app.impl.PixServiceImpl;
 import com.store.itaupixcase.cor.domain.Pix;
 import com.store.itaupixcase.cor.ports.in.InsertKeyPixInPort;
+import com.store.itaupixcase.cor.usecase.command.ConsultPixKeyCommand;
 import com.store.itaupixcase.cor.usecase.command.FiltersCommand;
-import com.store.itaupixcase.cor.usecase.command.RegisterKeyPixCommand;
+import com.store.itaupixcase.cor.usecase.command.RegisterPixKeyCommand;
 import com.store.itaupixcase.infra.adapters.in.dto.consult.FiltersDto;
 import com.store.itaupixcase.infra.adapters.in.dto.consult.PixRequestConsultDTO;
 import com.store.itaupixcase.infra.adapters.in.dto.insert.PixRequestDTO;
@@ -13,14 +14,13 @@ import com.store.itaupixcase.infra.adapters.in.dto.update.PixRequestUpdateDTO;
 import com.store.itaupixcase.infra.adapters.in.dto.update.PixResponseUpdateDTO;
 import com.store.itaupixcase.infra.adapters.out.entity.PixEntity;
 import com.store.itaupixcase.infra.adapters.out.mapper.PixMapper;
-import com.store.itaupixcase.infra.adapters.out.repository.PixConsultRepository;
 import com.store.itaupixcase.infra.adapters.out.repository.PixRepository;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
-import java.util.Collections;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,8 +38,6 @@ class PixServiceImplTest {
     private PixRepository pixRepository;
     @Mock
     private EntityManager entityManager;
-    @Mock
-    private PixConsultRepository pixConsultRepository;
 
     @InjectMocks
     private PixServiceImpl pixService;
@@ -52,7 +50,7 @@ class PixServiceImplTest {
     @Test
     void registerPixKey_deveRetornarPixResponseDTO() {
         PixRequestDTO dto = mock(PixRequestDTO.class);
-        RegisterKeyPixCommand command = mock(RegisterKeyPixCommand.class);
+        RegisterPixKeyCommand command = mock(RegisterPixKeyCommand.class);
         PixEntity entity = mock(PixEntity.class);
 
         when(dto.getKeyType()).thenReturn("CPF");
@@ -66,12 +64,13 @@ class PixServiceImplTest {
 
         when(insertKeyPixInPort.insertKeyPix(any())).thenReturn(mock(Pix.class));
         when(pixMapper.toEntityInsert(any())).thenReturn(entity);
-        when(entity.getId()).thenReturn(UUID.fromString("728bb8f8-0587-4b89-bc77-2299ab22b46a"));
+        UUID id = UUID.randomUUID();
+        when(entity.getId()).thenReturn(id);
 
         PixResponseDTO response = pixService.registerPixKey(dto);
 
         assertNotNull(response);
-        assertEquals(UUID.fromString("728bb8f8-0587-4b89-bc77-2299ab22b46a"), response.getId());
+        assertEquals(id, response.getId());
         verify(pixRepository).save(entity);
     }
 
@@ -103,7 +102,8 @@ class PixServiceImplTest {
         PixEntity entity = mock(PixEntity.class);
         PixResponseUpdateDTO responseUpdateDTO = mock(PixResponseUpdateDTO.class);
 
-        when(dto.getId()).thenReturn(UUID.fromString("728bb8f8-0587-4b89-bc77-2299ab22b46a"));
+        UUID id = UUID.randomUUID();
+        when(dto.getId()).thenReturn(id);
         when(dto.getAccountType()).thenReturn("corrente");
         when(dto.getAccountNumber()).thenReturn(1);
         when(dto.getAgencyNumber()).thenReturn(1);
@@ -112,13 +112,13 @@ class PixServiceImplTest {
 
         when(insertKeyPixInPort.updateKeyPix(any())).thenReturn(mock(Pix.class));
         when(pixMapper.toEntityUpdate(any())).thenReturn(entity);
-        when(entity.getId()).thenReturn(UUID.fromString("728bb8f8-0587-4b89-bc77-2299ab22b46a"));
+        when(entity.getId()).thenReturn(id);
         when(entity.getAccountType()).thenReturn("corrente");
         when(entity.getAccountNumber()).thenReturn(1);
         when(entity.getAgencyNumber()).thenReturn(1);
         when(entity.getHolderName()).thenReturn("Nome");
         when(entity.getHolderSurname()).thenReturn("Sobrenome");
-        when(pixRepository.findById(UUID.fromString("728bb8f8-0587-4b89-bc77-2299ab22b46a"))).thenReturn(Optional.of(entity));
+        when(pixRepository.findById(id)).thenReturn(Optional.of(entity));
         when(pixMapper.toResponseUpdateDTO(entity)).thenReturn(responseUpdateDTO);
 
         PixResponseUpdateDTO result = pixService.updatePixKey(dto);
@@ -133,7 +133,8 @@ class PixServiceImplTest {
         PixRequestUpdateDTO dto = mock(PixRequestUpdateDTO.class);
         PixEntity entity = mock(PixEntity.class);
 
-        when(dto.getId()).thenReturn(UUID.fromString("728bb8f8-0587-4b89-bc77-2299ab22b46a"));
+        UUID id = UUID.randomUUID();
+        when(dto.getId()).thenReturn(id);
         when(dto.getAccountType()).thenReturn("corrente");
         when(dto.getAccountNumber()).thenReturn(1);
         when(dto.getAgencyNumber()).thenReturn(1);
@@ -142,7 +143,7 @@ class PixServiceImplTest {
 
         when(insertKeyPixInPort.updateKeyPix(any())).thenReturn(mock(Pix.class));
         when(pixMapper.toEntityUpdate(any())).thenReturn(entity);
-        when(entity.getId()).thenReturn(UUID.fromString("728bb8f8-0587-4b89-bc77-2299ab22b46a"));
+        when(entity.getId()).thenReturn(id);
         doThrow(new RuntimeException("erro")).when(pixRepository).updatePixFields(any(), any(), any(), any(), any(), any());
 
         RuntimeException ex = assertThrows(RuntimeException.class, () -> pixService.updatePixKey(dto));
@@ -155,7 +156,7 @@ class PixServiceImplTest {
         FiltersCommand command = mock(FiltersCommand.class);
         PixRequestConsultDTO consultDTO = mock(PixRequestConsultDTO.class);
 
-        when(filtersDto.getId()).thenReturn(UUID.fromString("728bb8f8-0587-4b89-bc77-2299ab22b46a"));
+        when(filtersDto.getId()).thenReturn(UUID.randomUUID());
         when(filtersDto.getKeyType()).thenReturn("CPF");
         when(filtersDto.getAccountNumber()).thenReturn(1);
         when(filtersDto.getKeyValue()).thenReturn("123");
@@ -165,35 +166,13 @@ class PixServiceImplTest {
         when(filtersDto.getInactiveTime()).thenReturn(null);
         when(filtersDto.getAccountType()).thenReturn("corrente");
 
-        when(insertKeyPixInPort.consultKeyPix(any())).thenReturn(command);
-        when(pixConsultRepository.findByFilters(command)).thenReturn(Collections.singletonList(mock(PixEntity.class)));
-        when(pixMapper.toResponseConsultDTOList(any())).thenReturn(Collections.singletonList(consultDTO));
+        List<ConsultPixKeyCommand> consultList = List.of(mock(ConsultPixKeyCommand.class));
+        when(insertKeyPixInPort.consultKeyPix(any())).thenReturn(consultList);
+        when(pixMapper.toPixRequestConsultDTOList(consultList)).thenReturn(List.of(consultDTO));
 
         List<PixRequestConsultDTO> result = pixService.getPixKey(filtersDto);
 
         assertNotNull(result);
         assertEquals(1, result.size());
-    }
-
-    @Test
-    void getPixKey_deveLancarExcecaoAoConsultar() {
-        FiltersDto filtersDto = mock(FiltersDto.class);
-        FiltersCommand command = mock(FiltersCommand.class);
-
-        when(filtersDto.getId()).thenReturn(UUID.fromString("728bb8f8-0587-4b89-bc77-2299ab22b46a"));
-        when(filtersDto.getKeyType()).thenReturn("CPF");
-        when(filtersDto.getAccountNumber()).thenReturn(1);
-        when(filtersDto.getKeyValue()).thenReturn("123");
-        when(filtersDto.getAgencyNumber()).thenReturn(1);
-        when(filtersDto.getAccountHolderName()).thenReturn("Nome");
-        when(filtersDto.getCreatedTime()).thenReturn(null);
-        when(filtersDto.getInactiveTime()).thenReturn(null);
-        when(filtersDto.getAccountType()).thenReturn("corrente");
-
-        when(insertKeyPixInPort.consultKeyPix(any())).thenReturn(command);
-        when(pixConsultRepository.findByFilters(command)).thenThrow(new RuntimeException("erro"));
-
-        RuntimeException ex = assertThrows(RuntimeException.class, () -> pixService.getPixKey(filtersDto));
-        assertTrue(ex.getMessage().contains("Erro ao consultar"));
     }
 }

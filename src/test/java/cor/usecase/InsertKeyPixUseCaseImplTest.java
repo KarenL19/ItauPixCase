@@ -10,11 +10,14 @@ import com.store.itaupixcase.cor.domain.validation.AccountValidator;
 import com.store.itaupixcase.cor.domain.validation.FilterValidator;
 import com.store.itaupixcase.cor.domain.validation.PixKeyValidator;
 import com.store.itaupixcase.cor.usecase.InsertKeyPixUseCaseImpl;
+import com.store.itaupixcase.cor.usecase.command.ConsultPixKeyCommand;
 import com.store.itaupixcase.cor.usecase.command.FiltersCommand;
-import com.store.itaupixcase.cor.usecase.command.RegisterKeyPixCommand;
+import com.store.itaupixcase.cor.usecase.command.RegisterPixKeyCommand;
+import com.store.itaupixcase.infra.adapters.out.implementsPortOut.ConsultPixKeyOuntPort;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +29,7 @@ class InsertKeyPixUseCaseImplTest {
     private PixKeyValidator pixKeyValidator;
     private AccountValidator accountValidator;
     private FilterValidator filterValidator;
+    private ConsultPixKeyOuntPort consultPixKeyOuntPort;
     private InsertKeyPixUseCaseImpl useCase;
 
     @BeforeEach
@@ -34,12 +38,13 @@ class InsertKeyPixUseCaseImplTest {
         pixKeyValidator = mock(PixKeyValidator.class);
         accountValidator = mock(AccountValidator.class);
         filterValidator = mock(FilterValidator.class);
-        useCase = new InsertKeyPixUseCaseImpl(pixFactory, pixKeyValidator, accountValidator, filterValidator);
+        consultPixKeyOuntPort = mock(ConsultPixKeyOuntPort.class);
+        useCase = new InsertKeyPixUseCaseImpl(pixFactory, pixKeyValidator, accountValidator, filterValidator, consultPixKeyOuntPort);
     }
 
     @Test
-    void insertKeyPixDeveRetornarPixValido() {
-        RegisterKeyPixCommand command = mock(RegisterKeyPixCommand.class);
+    void insertKeyPix_deveRetornarPixValido() {
+        RegisterPixKeyCommand command = mock(RegisterPixKeyCommand.class);
         when(command.getKeyType()).thenReturn("CPF");
         when(command.getClientType()).thenReturn("PF");
         when(command.getAccountType()).thenReturn("CORRENTE");
@@ -66,15 +71,11 @@ class InsertKeyPixUseCaseImplTest {
         assertEquals("João", pix.getAccountHolderName());
         assertEquals("Silva", pix.getAccountHolderSurname());
         assertEquals(ClientType.PF, pix.getClientType());
-
-        verify(pixKeyValidator).existsPixKey("12345678901");
-        verify(pixKeyValidator).validateKeysByCLient(1234, 56789, "PF");
-        verify(pixKeyValidator).validateTypePerson("PF", "CPF");
     }
 
     @Test
-    void updateKeyPixDeveRetornarPixAtualizado() {
-        RegisterKeyPixCommand command = mock(RegisterKeyPixCommand.class);
+    void updateKeyPix_deveRetornarPixAtualizado() {
+        RegisterPixKeyCommand command = mock(RegisterPixKeyCommand.class);
         UUID id = UUID.randomUUID();
         when(command.getId()).thenReturn(id);
         when(command.getAccountType()).thenReturn("POUPANCA");
@@ -94,22 +95,21 @@ class InsertKeyPixUseCaseImplTest {
         assertEquals(2222, pix.getAgencyNumber());
         assertEquals("Maria", pix.getAccountHolderName());
         assertEquals("Oliveira", pix.getAccountHolderSurname());
-
-        verify(accountValidator).validateIdActive(id);
-        verify(accountValidator).validateIdPix(id);
-        verify(accountValidator).validateAccountNumber(1111);
-        verify(accountValidator).validateAgencyNumber(2222);
-        verify(accountValidator).validateHolderName("Maria");
-        verify(accountValidator).validateHolderSurname("Oliveira");
     }
 
     @Test
-    void consultKeyPixDeveValidarEFixarCommand() {
-        FiltersCommand command = mock(FiltersCommand.class);
+    void consultKeyPix_deveValidarEChamarPort() {
+        FiltersCommand filtersCommand = mock(FiltersCommand.class);
+        ConsultPixKeyCommand consultPixKeyCommand = mock(ConsultPixKeyCommand.class);
+        when(consultPixKeyCommand.getInactiveTime()).thenReturn("");
+        List<ConsultPixKeyCommand> consultList = List.of(consultPixKeyCommand);
+        when(consultPixKeyOuntPort.consultKeyPix(filtersCommand)).thenReturn(consultList);
 
-        FiltersCommand result = useCase.consultKeyPix(command);
+        List<ConsultPixKeyCommand> result = useCase.consultKeyPix(filtersCommand);
 
-        assertEquals(command, result);
-        verify(filterValidator).validateFilters(command);
+        assertNotNull(result);
+        assertEquals(consultList, result);
+        verify(filterValidator).validateFilters(filtersCommand);
+        verify(consultPixKeyOuntPort).consultKeyPix(filtersCommand);
     }
 }

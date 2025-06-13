@@ -1,6 +1,7 @@
 package com.store.itaupixcase.infra.adapters.out.mapper.impl;
 
 import com.store.itaupixcase.cor.domain.Pix;
+import com.store.itaupixcase.cor.usecase.command.ConsultPixKeyCommand;
 import com.store.itaupixcase.infra.adapters.in.dto.consult.PixRequestConsultDTO;
 import com.store.itaupixcase.infra.adapters.in.dto.update.PixResponseUpdateDTO;
 import com.store.itaupixcase.infra.adapters.out.entity.PixEntity;
@@ -54,27 +55,42 @@ public class PixMapperImpl implements PixMapper {
                 .build();
     }
 
+
     @Override
-    public List<PixRequestConsultDTO> toResponseConsultDTOList(List<PixEntity> pixEntities) {
+    public List<ConsultPixKeyCommand> toConsultPixKeyCommandList(List<PixEntity> pixEntities) {
         return pixEntities.stream()
-                .map(this::toResponseConsultDTO)
+                .map(pix -> new ConsultPixKeyCommand(
+                        pix.getId(),
+                        pix.getKeyType(),
+                        pix.getKeyValue(),
+                        pix.getAccountType(),
+                        pix.getAccountNumber(),
+                        pix.getAgencyNumber(),
+                        pix.getHolderName(),
+                        pix.getHolderSurname(),
+                        String.valueOf(pix.getCreatedTime()),
+                        String.valueOf(pix.getInactiveTime())
+                        ))
                 .toList();
     }
 
-    private PixRequestConsultDTO toResponseConsultDTO(PixEntity pix) {
-        return PixRequestConsultDTO.builder()
-                .id(pix.getId())
-                .keyType(pix.getKeyType())
-                .keyValue(pix.getKeyValue())
-                .accountType(pix.getAccountType())
-                .accountNumber(pix.getAccountNumber())
-                .agencyNumber(pix.getAgencyNumber())
-                .accountHolderName(pix.getHolderName())
-                .accountHolderSurname(pix.getHolderSurname())
-                .inactiveTime(pix.getInactiveTime() == null ? "" : String.valueOf(pix.getInactiveTime()))
-                .createdTime(String.valueOf(pix.getCreatedTime()))
-                .build();
-    }
+    @Override
+   public List<PixRequestConsultDTO> toPixRequestConsultDTOList(List<ConsultPixKeyCommand> commands) {
+       return commands.stream()
+               .map(cmd -> PixRequestConsultDTO.builder()
+                       .id(cmd.getId())
+                       .keyType(cmd.getKeyType())
+                       .keyValue(cmd.getKeyValue())
+                       .accountType(cmd.getAccountType())
+                       .accountNumber(cmd.getAccountNumber())
+                       .agencyNumber(cmd.getAgencyNumber())
+                       .accountHolderName(cmd.getAccountHolderName())
+                       .accountHolderSurname(cmd.getAccountHolderSurname())
+                       .inactiveTime(cmd.getInactiveTime())
+                       .createdTime(cmd.getCreatedTime())
+                       .build())
+               .toList();
+   }
 
 
 }

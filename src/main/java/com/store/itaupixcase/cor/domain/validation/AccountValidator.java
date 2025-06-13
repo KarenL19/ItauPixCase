@@ -65,8 +65,8 @@ public class AccountValidator {
         }
     }
 
-    public void validateIdActive(UUID idActive) {
-        if (!validateIdPixOutPort.validateIdActive(idActive)) {
+    public void validateIdActive(UUID idActive, String keyStatus) {
+        if (!validateIdPixOutPort.validateIdActive(idActive, keyStatus)) {
             throw new NoSuchElementException("ID ativo não encontrado: " + idActive);
         }
     }
